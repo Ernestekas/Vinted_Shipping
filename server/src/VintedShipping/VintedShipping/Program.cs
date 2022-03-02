@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using VintedShipping.Services;
 
 namespace VintedShipping
 {
@@ -12,6 +13,8 @@ namespace VintedShipping
             services.ConfigureServices();
 
             var serviceProvider = services.BuildServiceProvider();
+            var consoleService = serviceProvider.GetService<ConsoleService>();
+            consoleService.Run();
         }
     }
 }
