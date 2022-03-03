@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using VintedShipping.Models;
 
 namespace VintedShipping.Services
 {
@@ -17,31 +15,67 @@ namespace VintedShipping.Services
 
         public void GetFullTransactions(string[] inputTransactions)
         {
-            List<string> outputTransactions = new List<string>();
+            List<Transaction> transactions = new List<Transaction>();
 
-            foreach(var transaction in inputTransactions)
+            foreach(var t in inputTransactions)
             {
-                List<string> transactionDetails = transaction.Split(' ').ToList();
-                
-                if(transactionDetails == null)
-                {
-                    outputTransactions.Add("Ignored");
-                }
-
-                if(transactionDetails.Count != 4)
-                {
-                    outputTransactions.Add(outputTransactions + " Ignored");
-                }
-
-
-
-                //if(!DateTime.TryParse(transactionDetails[0], out DateTime dateTime))
-                //{
-                //    outputTransactions.Add($"{transactionDetails[0]} Ignored");
-                //}
-
+                transactions.Add(ParseTextToTransaction(t));
             }
 
+            
+        }
+
+        private Transaction ParseTextToTransaction(string rawTransaction)
+        {
+            var parsedTransaction = new Transaction();
+            string[] rawTransactionOptions = rawTransaction.Split(' ');
+
+            if (string.IsNullOrWhiteSpace(rawTransaction))
+            {
+                return GetInvalidTransaction(rawTransaction);
+            }
+
+            if (rawTransactionOptions.Length != 3)
+            {
+                return GetInvalidTransaction(rawTransaction);
+            }
+
+            if (DateTime.TryParse(rawTransactionOptions[0], out DateTime date))
+            {
+                parsedTransaction.Date = date;
+            }
+            else
+            {
+                return GetInvalidTransaction(rawTransaction);
+            }
+
+            switch (rawTransactionOptions[1])
+            {
+                case "S":
+                    parsedTransaction.SizeLetter = "S";
+                    break;
+                case "M":
+                    parsedTransaction.SizeLetter = "M";
+                    break;
+                case "L":
+                    parsedTransaction.SizeLetter = "L";
+                    break;
+                default:
+                    return GetInvalidTransaction(rawTransaction);
+            }
+
+            parsedTransaction.CarrierCode = rawTransactionOptions[2];
+
+            return parsedTransaction;
+        }
+
+        private Transaction GetInvalidTransaction(string rawTransaction)
+        {
+            return new Transaction()
+            {
+                FailedTransaction = rawTransaction + "Ignored",
+                Valid = false
+            };
         }
     }
 }
