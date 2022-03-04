@@ -10,6 +10,7 @@ namespace VintedShipping
             services.AddTransient<InputFileService>();
             services.AddTransient<ConsoleService>();
             services.AddTransient<TransactionService>();
+            services.AddTransient<ProviderService>();
         }
     }
 }

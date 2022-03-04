@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
@@ -7,10 +8,12 @@ namespace VintedShipping.Services
     public class TransactionService
     {
         private readonly InputFileService _inputFileService;
+        private readonly ProviderService _providerService;
 
-        public TransactionService(InputFileService inputFileService)
+        public TransactionService(InputFileService inputFileService, ProviderService providerService)
         {
             _inputFileService = inputFileService;
+            _providerService = providerService;
         }
 
         public void GetFullTransactions(string[] inputTransactions)
@@ -23,59 +26,22 @@ namespace VintedShipping.Services
             }
         }
 
-        private List<Transaction> FormTransactions(string[] inputTransactions)
+        private async Task<List<Transaction>> FormTransactions(string[] inputTransactions)
         {
             var transactions = new List<Transaction>();
             foreach(var t in inputTransactions)
             {
-                transactions.Add(ParseTextToTransaction(t));
+                var transaction = await ParseTextToTransactionAsync(t); 
+                transactions.Add(transaction);
             }
 
             return transactions;
         }
 
-        private Transaction ParseTextToTransaction(string rawTransaction)
+        private async Task<Transaction> ParseTextToTransactionAsync(string rawTransaction)
         {
-            var parsedTransaction = new Transaction();
-            string[] rawTransactionOptions = rawTransaction.Split(' ');
+            List<Provider> providers = await _providerService.GetProvidersAsync();
 
-            if (string.IsNullOrWhiteSpace(rawTransaction))
-            {
-                return GetInvalidTransaction(rawTransaction);
-            }
-
-            if (rawTransactionOptions.Length != 3)
-            {
-                return GetInvalidTransaction(rawTransaction);
-            }
-
-            if (DateTime.TryParse(rawTransactionOptions[0], out DateTime date))
-            {
-                parsedTransaction.Date = date;
-            }
-            else
-            {
-                return GetInvalidTransaction(rawTransaction);
-            }
-
-            switch (rawTransactionOptions[1])
-            {
-                case "S":
-                    parsedTransaction.SizeLetter = "S";
-                    break;
-                case "M":
-                    parsedTransaction.SizeLetter = "M";
-                    break;
-                case "L":
-                    parsedTransaction.SizeLetter = "L";
-                    break;
-                default:
-                    return GetInvalidTransaction(rawTransaction);
-            }
-
-            parsedTransaction.CarrierCode = rawTransactionOptions[2];
-
-            return parsedTransaction;
         }
 
         private Transaction GetInvalidTransaction(string rawTransaction)
