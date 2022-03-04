@@ -15,14 +15,23 @@ namespace VintedShipping.Services
 
         public void GetFullTransactions(string[] inputTransactions)
         {
-            List<Transaction> transactions = new List<Transaction>();
+            List<Transaction> transactions = FormTransactions(inputTransactions);
+            
+            foreach(var transaction in transactions)
+            {
+                
+            }
+        }
 
+        private List<Transaction> FormTransactions(string[] inputTransactions)
+        {
+            var transactions = new List<Transaction>();
             foreach(var t in inputTransactions)
             {
                 transactions.Add(ParseTextToTransaction(t));
             }
 
-            
+            return transactions;
         }
 
         private Transaction ParseTextToTransaction(string rawTransaction)
