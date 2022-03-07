@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
@@ -14,16 +14,16 @@ namespace VintedShipping.Services
             _inputFileService = inputFileService;
         }
 
-        public async Task<List<Provider>> GetProvidersAsync()
+        public List<Provider> GetProvidersAsync()
         {
             List<Provider> providers = new List<Provider>();
-            string[] rawProvidersData = await _inputFileService.ReadProvidersAsync();
+            string[] rawProvidersData = _inputFileService.ReadProvidersAsync();
 
             foreach(var providerData in rawProvidersData)
             {
                 string[] providerParameters = providerData.Split(' ');
 
-                if (ValidateProviderString(providerData))
+                if (!ValidateProviderString(providerData))
                 {
                     continue;
                 }
@@ -44,7 +44,8 @@ namespace VintedShipping.Services
 
             try
             {
-                decimal.Parse(splitData[2]);
+                var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
+                decimal.Parse(splitData[2], numberFormatInfo);
             }
             catch
             {
@@ -68,12 +69,13 @@ namespace VintedShipping.Services
             {
                 provider = providers.FirstOrDefault(p => p.Code == providerParameters[0]);
             }
-            
+
+            var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             provider.Packages.Add(new Package()
             {
                 SizeAbbreviation = providerParameters[1],
-                BasePrice = decimal.Parse(providerParameters[2])
+                BasePrice = decimal.Parse(providerParameters[2], numberFormatInfo)
             });
             return provider;
         }
