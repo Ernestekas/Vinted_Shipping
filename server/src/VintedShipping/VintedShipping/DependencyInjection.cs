@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using VintedShipping.Interfaces;
 using VintedShipping.Services;
 
 namespace VintedShipping
@@ -7,9 +8,9 @@ namespace VintedShipping
     {
         public static void ConfigureServices(this IServiceCollection services)
         {
-            services.AddTransient<InputFileService>();
+            services.AddTransient<IInputFileService, InputFileService>();
             services.AddTransient<ConsoleService>();
-            services.AddTransient<TransactionService>();
+            services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<ProviderService>();
         }
     }

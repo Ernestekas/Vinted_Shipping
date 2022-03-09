@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using VintedShipping.Interfaces;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
 {
-    public class TransactionService
+    public class TransactionService : ITransactionService
     {
         private const decimal _maxTotalDiscountsAllowed = 10.00M;
 
@@ -16,35 +18,35 @@ namespace VintedShipping.Services
         private int _discountLargePackPerLargePacksCount = 3;
         private int _largePacksDiscounted = 0;
 
-        private readonly InputFileService _inputFileService;
-        private readonly ProviderService _providerService;
-        
-        public TransactionService(InputFileService inputFileService, ProviderService providerService)
+        private readonly IInputFileService _inputFileService;
+        private readonly IProviderService _providerService;
+
+        public TransactionService(IInputFileService inputFileService, IProviderService providerService)
         {
             _inputFileService = inputFileService;
             _providerService = providerService;
         }
 
-        public List<Transaction> GetTransactionsWithDiscounts()
+        public async Task<List<Transaction>> GetTransactionsWithDiscounts()
         {
-            List<Transaction> allTransactionsBases = GetBaseData();
-            List<Transaction> allTransactionsFull = UpdateTransactionsInfo(allTransactionsBases);
+            List<Transaction> allTransactionsBases = await GetBaseData();
+            List<Transaction> allTransactionsFull = await UpdateTransactionsInfo(allTransactionsBases);
 
             return allTransactionsFull;
         }
 
-        private List<Transaction> GetBaseData()
+        private async Task<List<Transaction>> GetBaseData()
         {
             List<Transaction> resultTransactions = new List<Transaction>();
 
-            string[] rawTransactionsData = _inputFileService.ReadInputAsync();
-            List<Provider> providers = _providerService.GetProvidersAsync();
+            string[] rawTransactionsData = await _inputFileService.ReadInputAsync();
+            List<Provider> providers = await _providerService.GetProvidersAsync();
 
-            foreach(var rawTransactionData in rawTransactionsData)
+            foreach (var rawTransactionData in rawTransactionsData)
             {
                 string[] rawTransactionDataContents = rawTransactionData.Split(' ');
 
-                if(IsValid(rawTransactionDataContents, providers))
+                if (IsValid(rawTransactionDataContents, providers))
                 {
                     resultTransactions.Add(GetValidTransaction(rawTransactionDataContents));
                     continue;
@@ -56,13 +58,13 @@ namespace VintedShipping.Services
             return resultTransactions;
         }
 
-        private List<Transaction> UpdateTransactionsInfo(List<Transaction> transactions)
+        private async Task<List<Transaction>> UpdateTransactionsInfo(List<Transaction> transactions)
         {
             List<Transaction> updatedTransactions = new List<Transaction>();
 
             _discountMonth = transactions.Select(t => t.Date.Month).Min();
-            
-            List<Provider> providers = _providerService.GetProvidersAsync();
+
+            List<Provider> providers = await _providerService.GetProvidersAsync();
             List<Package> packages = providers.SelectMany(p => p.Packages).ToList();
 
             foreach (Transaction transaction in transactions)
@@ -73,14 +75,14 @@ namespace VintedShipping.Services
                     continue;
                 }
 
-                if(!MonthsMatches(_discountMonth, transaction.Date.Month))
+                if (!MonthsMatches(_discountMonth, transaction.Date.Month))
                 {
                     _totalMonthlyDiscount = 0.00M;
                     _discountMonth = transaction.Date.Month;
                     _largePackCountCurrentMonth = 0;
                 }
 
-                if(_totalMonthlyDiscount >= _maxTotalDiscountsAllowed)
+                if (_totalMonthlyDiscount >= _maxTotalDiscountsAllowed)
                 {
                     updatedTransactions.Add(GetTransactionInfoWithoutDiscount(transaction, providers));
                     continue;
@@ -108,7 +110,7 @@ namespace VintedShipping.Services
                     GetSmallPackDiscount(transaction, providers);
                     break;
                 case "L":
-                    if(transaction.CarrierCode == "LP")
+                    if (transaction.CarrierCode == "LP")
                     {
                         _largePackCountCurrentMonth++;
                     }
@@ -142,7 +144,7 @@ namespace VintedShipping.Services
                     .Select(p => p.BasePrice)
                     .Min();
 
-            transaction.ShipmentPrice = 
+            transaction.ShipmentPrice =
                 providers
                     .FirstOrDefault(p => p.Code == transaction.CarrierCode)
                 .Packages
@@ -150,7 +152,7 @@ namespace VintedShipping.Services
 
             decimal discount = transaction.ShipmentPrice - lowestPrice;
 
-            if(_totalMonthlyDiscount + discount <= _maxTotalDiscountsAllowed)
+            if (_totalMonthlyDiscount + discount <= _maxTotalDiscountsAllowed)
             {
                 transaction.ShipmentPrice = lowestPrice;
                 transaction.Discount = discount;
@@ -166,7 +168,7 @@ namespace VintedShipping.Services
 
         private void GetLargePackDiscount(Transaction transaction, List<Provider> providers)
         {
-            transaction.ShipmentPrice = 
+            transaction.ShipmentPrice =
                 providers
                     .FirstOrDefault(p => p.Code == transaction.CarrierCode)
                 .Packages
@@ -176,7 +178,7 @@ namespace VintedShipping.Services
             decimal discount = transaction.ShipmentPrice;
             decimal discountsAllowed = _maxTotalDiscountsAllowed - _totalMonthlyDiscount;
 
-            if(discount > discountsAllowed)
+            if (discount > discountsAllowed)
             {
                 discount = discountsAllowed;
             }
@@ -203,7 +205,7 @@ namespace VintedShipping.Services
                 Valid = false
             };
         }
-        
+
         private Transaction GetValidTransaction(string[] rawTransactionDataContents)
         {
             return new Transaction

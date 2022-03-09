@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VintedShipping", "VintedShipping\VintedShipping.csproj", "{71CAD861-6D61-4035-90E7-7B4F85FC9FF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VintedShipping", "VintedShipping\VintedShipping.csproj", "{71CAD861-6D61-4035-90E7-7B4F85FC9FF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VintedShopping.UnitTests", "..\..\tests\VintedShopping.UnitTests\VintedShopping.UnitTests.csproj", "{1ACFBE79-76BE-4FD2-810A-22D669041975}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{71CAD861-6D61-4035-90E7-7B4F85FC9FF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71CAD861-6D61-4035-90E7-7B4F85FC9FF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71CAD861-6D61-4035-90E7-7B4F85FC9FF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ACFBE79-76BE-4FD2-810A-22D669041975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ACFBE79-76BE-4FD2-810A-22D669041975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ACFBE79-76BE-4FD2-810A-22D669041975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ACFBE79-76BE-4FD2-810A-22D669041975}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using VintedShipping.Interfaces;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
 {
-    public class ProviderService
+    public class ProviderService : IProviderService
     {
         private readonly InputFileService _inputFileService;
 
@@ -14,12 +16,12 @@ namespace VintedShipping.Services
             _inputFileService = inputFileService;
         }
 
-        public List<Provider> GetProvidersAsync()
+        public async Task<List<Provider>> GetProvidersAsync()
         {
             List<Provider> providers = new List<Provider>();
-            string[] rawProvidersData = _inputFileService.ReadProvidersAsync();
+            string[] rawProvidersData = await _inputFileService.ReadProvidersAsync();
 
-            foreach(var providerData in rawProvidersData)
+            foreach (var providerData in rawProvidersData)
             {
                 string[] providerParameters = providerData.Split(' ');
 
@@ -37,7 +39,7 @@ namespace VintedShipping.Services
         private bool ValidateProviderString(string rawProviderData)
         {
             string[] splitData = rawProviderData.Split(' ');
-            if(splitData.Length != 3)
+            if (splitData.Length != 3)
             {
                 return false;
             }
@@ -58,7 +60,7 @@ namespace VintedShipping.Services
         {
             Provider provider = new Provider();
 
-            if(providers.FirstOrDefault(p => p.Code == providerParameters[0]) == null)
+            if (providers.FirstOrDefault(p => p.Code == providerParameters[0]) == null)
             {
                 provider = new Provider()
                 {

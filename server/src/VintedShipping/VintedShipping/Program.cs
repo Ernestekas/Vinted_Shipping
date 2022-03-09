@@ -13,6 +13,7 @@ namespace VintedShipping
 
             var serviceProvider = services.BuildServiceProvider();
             var consoleService = serviceProvider.GetService<ConsoleService>();
+
             consoleService.Run();
         }
     }

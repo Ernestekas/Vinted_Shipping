@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
@@ -15,7 +16,7 @@ namespace VintedShipping.Services
             _transactionService = transactionService;
         }
 
-        public void Run()
+        public async Task Run()
         {
             bool run = true;
             while (run)
@@ -30,7 +31,7 @@ namespace VintedShipping.Services
                 switch (action)
                 {
                     case "1":
-                        List<Transaction> transactions = _transactionService.GetTransactionsWithDiscounts();
+                        List<Transaction> transactions = await _transactionService.GetTransactionsWithDiscounts();
                         PrintTransactions(transactions);
                         Console.ReadKey();
                         break;
