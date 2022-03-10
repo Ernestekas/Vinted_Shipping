@@ -9,9 +9,9 @@ namespace VintedShipping.Services
 {
     public class ProviderService : IProviderService
     {
-        private readonly InputFileService _inputFileService;
+        private readonly IInputFileService _inputFileService;
 
-        public ProviderService(InputFileService inputFileService)
+        public ProviderService(IInputFileService inputFileService)
         {
             _inputFileService = inputFileService;
         }
@@ -32,7 +32,7 @@ namespace VintedShipping.Services
 
                 providers.Add(FormProvider(providerParameters, providers));
             }
-
+            
             return providers;
         }
 

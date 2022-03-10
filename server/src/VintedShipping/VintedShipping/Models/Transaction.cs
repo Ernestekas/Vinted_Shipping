@@ -2,10 +2,12 @@
 
 namespace VintedShipping.Models
 {
+    
     public class Transaction
     {
         public DateTime Date { get; set; }
         public string SizeLetter { get; set; }
+        // Introduce enums
         public string CarrierCode { get; set; }
         public decimal ShipmentPrice { get; set; }
         public decimal Discount { get; set; }

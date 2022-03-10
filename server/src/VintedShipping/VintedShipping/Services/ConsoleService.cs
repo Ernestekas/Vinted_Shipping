@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VintedShipping.Interfaces;
 using VintedShipping.Models;
 
 namespace VintedShipping.Services
 {
     public class ConsoleService
     {
-        private readonly InputFileService _inputFileService;
-        private readonly TransactionService _transactionService;
+        private readonly ITransactionService _transactionService;
 
-        public ConsoleService(InputFileService inputFileService, TransactionService transactionService)
+        public ConsoleService(ITransactionService transactionService)
         {
-            _inputFileService = inputFileService;
             _transactionService = transactionService;
         }
 

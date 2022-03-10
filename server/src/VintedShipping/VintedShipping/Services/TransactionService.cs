@@ -192,11 +192,13 @@ namespace VintedShipping.Services
             }
         }
 
+        // this method is too small and lil bit f overkill
         private bool MonthsMatches(int discountMonth, int transactionMonth)
         {
             return discountMonth == transactionMonth;
         }
 
+        // Introduce Static Helper classess
         private Transaction GetInvalidTransaction(string rawTransactionData)
         {
             return new Transaction

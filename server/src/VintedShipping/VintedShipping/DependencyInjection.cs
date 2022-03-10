@@ -11,7 +11,7 @@ namespace VintedShipping
             services.AddTransient<IInputFileService, InputFileService>();
             services.AddTransient<ConsoleService>();
             services.AddTransient<ITransactionService, TransactionService>();
-            services.AddTransient<ProviderService>();
+            services.AddTransient<IProviderService, ProviderService>();
         }
     }
 }
