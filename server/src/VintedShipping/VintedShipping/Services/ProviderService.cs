@@ -10,6 +10,7 @@ namespace VintedShipping.Services
     public class ProviderService : IProviderService
     {
         private readonly IInputFileService _inputFileService;
+        private readonly NumberFormatInfo _decimalCulture = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
         public ProviderService(IInputFileService inputFileService)
         {
@@ -30,7 +31,8 @@ namespace VintedShipping.Services
                     continue;
                 }
 
-                providers.Add(FormProvider(providerParameters, providers));
+                UpdateProviders(providerParameters, providers);
+                
             }
             
             return providers;
@@ -56,30 +58,43 @@ namespace VintedShipping.Services
             return true;
         }
 
-        private Provider FormProvider(string[] providerParameters, List<Provider> providers)
+        private void UpdateProviders(string[] providerParameters, List<Provider> providers)
         {
-            Provider provider = new Provider();
-
-            if (providers.FirstOrDefault(p => p.Code == providerParameters[0]) == null)
+            switch(providers.FirstOrDefault(p => p.Code == providerParameters[0]) == null)
             {
-                provider = new Provider()
-                {
-                    Code = providerParameters[0]
-                };
+                case true:
+                    AddNewProvider(providerParameters, providers);
+                    break;
+                case false:
+                    AddPackage(providerParameters, providers);
+                    break;
             }
-            else
-            {
-                provider = providers.FirstOrDefault(p => p.Code == providerParameters[0]);
-            }
+        }
 
-            var numberFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "." };
+        private void AddNewProvider(string[] providerParameters, List<Provider> providers)
+        {
+            var provider = new Provider()
+            {
+                Code = providerParameters[0]
+            };
 
             provider.Packages.Add(new Package()
             {
                 SizeAbbreviation = providerParameters[1],
-                BasePrice = decimal.Parse(providerParameters[2], numberFormatInfo)
+                BasePrice = decimal.Parse(providerParameters[2], _decimalCulture)
             });
-            return provider;
+
+            providers.Add(provider);
+        }
+
+        private void AddPackage(string[] providerParameters, List<Provider> providers)
+        {
+            int index = providers.FindLastIndex(p => p.Code == providerParameters[0]);
+            providers[index].Packages.Add(new Package
+            {
+                SizeAbbreviation = providerParameters[1],
+                BasePrice = decimal.Parse(providerParameters[2], _decimalCulture)
+            });
         }
     }
 }

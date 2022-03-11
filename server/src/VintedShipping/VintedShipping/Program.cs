@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using VintedShipping.Services;
 
 namespace VintedShipping
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
 
@@ -14,7 +15,7 @@ namespace VintedShipping
             var serviceProvider = services.BuildServiceProvider();
             var consoleService = serviceProvider.GetService<ConsoleService>();
 
-            consoleService.Run();
+            await consoleService.Run();
         }
     }
 }
