@@ -156,6 +156,7 @@ namespace VintedShipping.Services
             {
                 transaction.ShipmentPrice = lowestPrice;
                 transaction.Discount = discount;
+                _totalMonthlyDiscount += discount;
             }
             else
             {
